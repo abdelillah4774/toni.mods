@@ -48,6 +48,10 @@
       word-break: break-word;
     }
 
+    #qrCanvas {
+      margin-top: 20px;
+    }
+
     .hidden {
       display: none;
     }
@@ -59,6 +63,7 @@
     <input type="text" id="urlInput" placeholder="أدخل الرابط هنا" />
     <button onclick="createQR()">إنشاء</button>
     <p id="linkOutput"></p>
+    <div id="qrCanvas"></div>
   </div>
 
   <div class="app hidden" id="redirectBox">
@@ -72,7 +77,7 @@
     const id = params.get("id");
 
     if (id) {
-      // تشغيل وضع "visit"
+      // وضع التحويل visit
       document.getElementById("qrApp").classList.add("hidden");
       document.getElementById("redirectBox").classList.remove("hidden");
 
@@ -90,23 +95,26 @@
       }
     }
 
-    // وضع الإنشاء
     function createQR() {
       const url = document.getElementById("urlInput").value.trim();
+      const linkOutput = document.getElementById("linkOutput");
+      const qrCanvas = document.getElementById("qrCanvas");
+
       if (!url) return alert("أدخل رابط صحيح");
 
       const id = Date.now().toString(36);
-      const data = {
-        originalUrl: url,
-        scans: 0
-      };
-
+      const data = { originalUrl: url, scans: 0 };
       localStorage.setItem("qr_" + id, JSON.stringify(data));
 
       const fullUrl = `${window.location.origin}${window.location.pathname}?id=${id}`;
-      document.getElementById("linkOutput").innerHTML = `
-        رابط المسح: <a href="${fullUrl}" target="_blank">${fullUrl}</a>
-      `;
+
+      linkOutput.innerHTML = `رابط المسح: <a href="${fullUrl}" target="_blank">${fullUrl}</a>`;
+      qrCanvas.innerHTML = "";
+
+      QRCode.toCanvas(fullUrl, { width: 200 }, (err, canvas) => {
+        if (err) return console.error(err);
+        qrCanvas.appendChild(canvas);
+      });
     }
   </script>
 </body>
