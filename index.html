@@ -1,36 +1,113 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>منشئ QR احترافي</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>منشئ QR و تتبع</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #2a2f4a;
+      color: #fff;
+      font-family: 'Cairo', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 50px;
+      min-height: 100vh;
+    }
+
+    .app {
+      background-color: #1f2335;
+      padding: 30px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 10px #000;
+    }
+
+    input {
+      width: 90%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4fd1c5;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    a {
+      color: #4fd1c5;
+      word-break: break-word;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <h1>منشئ QR Code</h1>
-      <p>حوّل الروابط إلى رموز QR وراقب عدد مرات المسح</p>
-    </header>
+  <div class="app" id="qrApp">
+    <h1>منشئ رمز QR</h1>
+    <input type="text" id="urlInput" placeholder="أدخل الرابط هنا" />
+    <button onclick="createQR()">إنشاء</button>
+    <p id="linkOutput"></p>
+  </div>
 
-    <main>
-      <input type="text" id="urlInput" placeholder="أدخل الرابط هنا">
-      <button onclick="generateQRCode()">إنشاء الرمز</button>
-
-      <div id="qrResult" class="hidden">
-        <h3>رمز الاستجابة:</h3>
-        <div id="qrCodeContainer"></div>
-        <p>عدد المسحات: <span id="scanCount">0</span></p>
-      </div>
-    </main>
-
-    <footer>
-      <p>&copy; 2025 منشئ QR احترافي</p>
-    </footer>
+  <div class="app hidden" id="redirectBox">
+    <h1>جاري تحويلك إلى الموقع...</h1>
+    <p>يرجى الانتظار لحظة</p>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-  <script src="script.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (id) {
+      // تشغيل وضع "visit"
+      document.getElementById("qrApp").classList.add("hidden");
+      document.getElementById("redirectBox").classList.remove("hidden");
+
+      const key = "qr_" + id;
+      const data = JSON.parse(localStorage.getItem(key));
+
+      if (!data || !data.originalUrl) {
+        document.body.innerHTML = "<h2 style='color:red'>الرابط غير موجود أو غير صالح</h2>";
+      } else {
+        data.scans = (data.scans || 0) + 1;
+        localStorage.setItem(key, JSON.stringify(data));
+        setTimeout(() => {
+          window.location.href = data.originalUrl;
+        }, 2000);
+      }
+    }
+
+    // وضع الإنشاء
+    function createQR() {
+      const url = document.getElementById("urlInput").value.trim();
+      if (!url) return alert("أدخل رابط صحيح");
+
+      const id = Date.now().toString(36);
+      const data = {
+        originalUrl: url,
+        scans: 0
+      };
+
+      localStorage.setItem("qr_" + id, JSON.stringify(data));
+
+      const fullUrl = `${window.location.origin}${window.location.pathname}?id=${id}`;
+      document.getElementById("linkOutput").innerHTML = `
+        رابط المسح: <a href="${fullUrl}" target="_blank">${fullUrl}</a>
+      `;
+    }
+  </script>
 </body>
 </html>
