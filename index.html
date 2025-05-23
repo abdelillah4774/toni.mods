@@ -1,41 +1,36 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>toni mods</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>منشئ QR احترافي</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container" id="main-page">
-    <h1>toni mods</h1>
-    <input type="text" id="searchInput" placeholder="Find a mod..." />
-    <div id="mods-list"></div>
+  <div class="app">
+    <header>
+      <h1>منشئ QR Code</h1>
+      <p>حوّل الروابط إلى رموز QR وراقب عدد مرات المسح</p>
+    </header>
+
+    <main>
+      <input type="text" id="urlInput" placeholder="أدخل الرابط هنا">
+      <button onclick="generateQRCode()">إنشاء الرمز</button>
+
+      <div id="qrResult" class="hidden">
+        <h3>رمز الاستجابة:</h3>
+        <div id="qrCodeContainer"></div>
+        <p>عدد المسحات: <span id="scanCount">0</span></p>
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 منشئ QR احترافي</p>
+    </footer>
   </div>
 
-  <!-- Mod details page -->
-  <div id="mod-details" style="display: none;">
-    <h2 id="mod-name"></h2>
-    <img id="mod-image" class="mod-img" />
-    <p id="mod-description"></p>
-    <p id="mod-details-desc"></p>
-    <button class="download-btn" onclick="goToWait()">Continue to download</button>
-    <br><br>
-    <button class="download-btn" onclick="backToMain()">Back</button>
-  </div>
-
-  <!-- Waiting page -->
-  <div id="wait-page" style="display: none;">
-    <h2>wait a moment...</h2>
-    <p>You will be redirected within <span id="counter">5</span> seconds.</p>
-  </div>
-
-  <!-- Final Download Page -->
-  <div id="final-download" style="display: none;">
-    <h2>Download the file now</h2>
-    <a id="final-link" class="download-btn" target="_blank">Download the mod</a>
-    <br><br>
-    <button class="download-btn" onclick="backToMain()">اBack to home page</button>
-  </div>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
